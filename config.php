@@ -11,7 +11,7 @@
     
     define( "DB_DSN", "mysql:host=localhost;dbname=scot_food_order");
     define( "DB_USERNAME", "root" );
-    define( "DB_PASSWORD", "" );
+    define( "DB_PASSWORD", "Tv7ggaB2gXhl" );
     define( "CLASS_PATH", "classes" );
     define( "TEMPLATE_PATH", "pages" );
 

@@ -184,6 +184,7 @@
     $meals       = array();
 
     $user          = new Meal;
+
     $mealInfo    = $user->getList();
     $mealList    = $mealInfo['results'];
     $numberOfItems = $mealInfo['totalRows'];
@@ -192,7 +193,8 @@
       foreach($mealList as $meal){
 
         array_push($meals,
-        array("name"=>$meal->getname(),
+        array("id"=> $meal->getid(),
+              "name"=>$meal->getname(),
               "price"=>$meal->getprice(),
               "details"=>$meal->getdetails(),
               "image"=>$meal->getimage()));
@@ -217,13 +219,14 @@
     if(!is_null($meal)){
       $code = "GOOD";
       $message = "Locations found";
-      
+
+      $id = $meal->getid();
       $name = $meal->getname();
       $price =$meal->getprice();
       $details =$meal->getdetails();
       $image =$meal->getimage();
   
-      array_push($response,array("code"=>$code,"message"=>$message,"name"=>$name,"price"=>$price,"details"=>$details,"image"=>$image));
+      array_push($response,array("code"=>$code,"message"=>$message,"id"=>$id,"name"=>$name,"price"=>$price,"details"=>$details,"image"=>$image));
   
     }
     else{
