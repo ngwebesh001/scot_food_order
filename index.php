@@ -21,7 +21,16 @@ switch($action){
     break;
   case 'vendor-sign-in':
     vendorSignIn();
+    break;
+  case 'get-all-vendor-info':
+    getAllVendorInfo();
+    break;
+  case 'get-vendor-byId':
+    getVendorById();
     break;  
+  case 'remove-vendor':
+    deleteVendor();
+    break;      
   case 'admin-sign-up':
     adminSignUp();
     break;
@@ -36,5 +45,11 @@ switch($action){
     break;
   case 'get-food-byId':
     getMealById();
-    break;     
+    break;
+  case 'set-food-info':
+    registerMeal();
+    break;
+  case 'remove-meal':
+    deleteMeal();
+    break;         
 }

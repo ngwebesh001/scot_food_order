@@ -117,13 +117,30 @@ class Meal
 
     }
 
-    //make the image hash
-    public function hashimage($image){
-      $image = hash("sha512",$image);
-      return $image;
+    
+    public function storeUploadedImage( $image, $name ) {
+      $ext = '.png';
+
+      file_put_contents('images/'.$name.$ext, base64_decode($image));
+      $this->image = $name.$ext;
     }
 
+    public function isMealRegistered($name){
+      $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
+      $sql = "SELECT * FROM meals 
+              WHERE name = :name";
 
+      $st = $conn->prepare( $sql );
+      $st->bindValue( ":name", $name, PDO::PARAM_STR );
+      $st->execute();
+      $row = $st->fetch();
+      $conn = null;
+
+      if ( $row ) 
+        return true;
+      else
+        return false;
+  }
 
     /**
     * Returns an User object matching the given F.A.Q ID
@@ -141,21 +158,6 @@ class Meal
       $row = $st->fetch();
       $conn = null;
       if ( $row ) return new Meal( $row );
-    }
-
-    public function detailsIsRegistered( $details ) : bool {
-      $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
-      $sql = "SELECT * FROM meals WHERE details = :details";
-      $st = $conn->prepare( $sql );
-      $st->bindValue( ":details", $details, PDO::PARAM_STR );
-      $st->execute();
-      $row = $st->fetch();
-      $conn = null;
-
-      if ( $row ) 
-        return true;
-      else
-        return false;
     }
 
     /**
@@ -271,7 +273,7 @@ class Meal
       $st->bindValue( ":name", $this->name, PDO::PARAM_STR );
       $st->bindValue( ":price", $this->price, PDO::PARAM_STR );
       $st->bindValue( ":details", $this->details, PDO::PARAM_STR );
-      $st->bindValue( ":image", $this->hashimage($this->image), PDO::PARAM_STR );
+      $st->bindValue( ":image", $this->image, PDO::PARAM_STR );
       $st->execute();
       $this->id = $conn->lastInsertId();
       $conn = null;

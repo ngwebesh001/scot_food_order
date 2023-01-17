@@ -112,6 +112,79 @@
     echo json_encode($response);
   }
 
+  function getAllVendorInfo(){
+    $code = ""; $message = "";
+    $response      = array();
+    $vendors       = array();
+
+    $user          = new FoodVendor;
+
+    $vendorInfo    = $user->getList();
+    $vendorList    = $vendorInfo['results'];
+    $numberOfItems = $vendorInfo['totalRows'];
+  
+    if($numberOfItems >= 1){
+      foreach($vendorList as $vendor){
+
+        array_push($vendors,
+        array("id"=> $vendor->getId(),
+              "first_name"=>$vendor->getFirstName(),
+              "last_name"=>$vendor->getLastName(),
+              "email"=>$vendor->getEmail()));
+      }
+
+      $code = "GOOD";
+      $message = "Vendor Info Available";
+      array_push($response,array("code"=>$code,"message"=>$message,"vendorList"=>$vendors));
+    }else {
+      $code = "BAD";
+      $message = "No Vendor Available";
+      array_push($response,array("code"=>$code,"message"=>$message));
+    }
+   
+    echo json_encode($response);
+  }
+
+  function getVendorById() {
+    $response = array();
+    $vendor = FoodVendor::getById( $_POST['id']);
+  
+    if(!is_null($vendor)){
+      $code = "GOOD";
+      $message = "Vendor found";
+
+      $id = $vendor->getId();
+      $firstname = $vendor->getFirstName();
+      $lastname = $vendor->getLastName();
+      $email = $vendor->getEmail();
+  
+      array_push($response,array("code"=>$code,"message"=>$message,"id"=>$id,"firstname"=>$firstname,
+      "lastname"=>$lastname,"email"=>$email));
+  
+    }
+    else{
+      $code = "BAD";
+      $message = "vendor info could not be retrived.";
+      array_push($response,array("code"=>$code,"message"=>$message));
+    }
+  
+    echo json_encode($response);
+  }
+
+  function deleteVendor(){
+    $response = array();
+
+    $vendor = new FoodVendor;
+    $vendor->setId($_POST['vendor_id']);
+    $vendor->delete();
+    
+    $code = "GOOD";
+    $message = "Delete Request Made";
+    
+    array_push($response,array("code"=>$code,"message"=>$message));
+    echo json_encode($response);
+  }
+
   function adminSignUp(){
     $response = array();
     $user_id = "0";
@@ -218,7 +291,7 @@
   
     if(!is_null($meal)){
       $code = "GOOD";
-      $message = "Locations found";
+      $message = "Meal info found";
 
       $id = $meal->getid();
       $name = $meal->getname();
@@ -231,10 +304,55 @@
     }
     else{
       $code = "BAD";
-      $message = "location info could not be retrived.";
+      $message = "meal info could not be retrived.";
       array_push($response,array("code"=>$code,"message"=>$message));
     }
   
+    echo json_encode($response);
+  }
+
+  function registerMeal(){
+    $response = array();
+    $meal = new Meal;
+  
+    $isRegistered = $meal->isMealRegistered($_POST['name']);
+    
+    if($isRegistered){
+      $code = "BAD";
+      $message = "You have already registered this meal.";
+    }
+    elseif(!$isRegistered){
+  
+      $meal->storeFormValues( $_POST );
+      $name = 'meal-'.time();
+      $meal->storeUploadedImage( $_POST['image'], $name );      
+      $num_rows = $meal->insert();
+
+      if($num_rows >= 1){
+        $code = "GOOD";
+        $message = "Your meal has been successfully registered in the system.";
+      }
+      else{
+        $code = "BAD";
+        $message = "Your meal could not be registered.";  
+      }
+    }
+    
+    array_push($response,array("code"=>$code,"message"=>$message));
+    echo json_encode($response);
+  }
+
+  function deleteMeal(){
+    $response = array();
+
+    $meal = new Meal;
+    $meal->setId($_POST['meal_id']);
+    $meal->delete();
+    
+    $code = "GOOD";
+    $message = "Delete Request Made";
+    
+    array_push($response,array("code"=>$code,"message"=>$message));
     echo json_encode($response);
   }
  
