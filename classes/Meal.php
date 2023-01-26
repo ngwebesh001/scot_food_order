@@ -12,6 +12,7 @@ class Meal
     *** @var int The faq ID from the database
     **/
     private $id = null;
+    private $vendor_id = null;
 
     private $name = null;
 
@@ -39,6 +40,7 @@ class Meal
 
     public function __construct( $data=array() ) {
       if ( isset( $data['id'] ) ) $this->id = (int) $data['id'];
+      if ( isset( $data['vendor_id'] ) ) $this->vendor_id = (int) $data['vendor_id'];
       if ( isset( $data['details'] ) ) $this->details = preg_replace ( "/[^\.\,\-\_\'\"\@\?\!\:\$ a-zA-Z0-9()]/", "", $data['details'] );
       if ( isset( $data['name'] ) ) $this->name = preg_replace ( "/[^\.\,\-\_\'\"\@\?\!\:\$ a-zA-Z0-9()]/", "", $data['name'] );
       if ( isset( $data['price'] ) ) $this->price = preg_replace ( "/[^\.\,\-\_\'\"\@\?\!\:\$ a-zA-Z0-9()]/", "", $data['price'] );
@@ -54,6 +56,14 @@ class Meal
 
     public function getId(){
       return $this->id;
+    }
+
+    public function setVendorId($vendor_id){
+      $this->vendor_id = $vendor_id;
+    }
+
+    public function getVendorId(){
+      return $this->vendor_id;
     }
 
     public function setdetails($details){
@@ -160,6 +170,17 @@ class Meal
       if ( $row ) return new Meal( $row );
     }
 
+    public static function getByVendorId( $vendor_id ) {
+      $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
+      $sql = "SELECT * FROM meals WHERE vendor_id = :vendor_id";
+      $st = $conn->prepare( $sql );
+      $st->bindValue( ":vendor_id", $vendor_id, PDO::PARAM_INT );
+      $st->execute();
+      $row = $st->fetch();
+      $conn = null;
+      if ( $row ) return new Meal( $row );
+    }
+
     /**
     * Returns all (or a range of) User objects in the DB
     *
@@ -174,6 +195,29 @@ class Meal
 
       $st = $conn->prepare( $sql );
       $st->bindValue( ":numRows", $numRows, PDO::PARAM_INT );
+      $st->execute();
+      $list = array();
+
+      while ( $row = $st->fetch() ) {
+        $user = new Meal( $row );
+        $list[] = $user;
+      }
+
+      // Now get the total number of users that matched the criteria
+      $sql = "SELECT FOUND_ROWS() AS totalRows";
+      $totalRows = $conn->query( $sql )->fetch();
+      $conn = null;
+      return ( array ( "results" => $list, "totalRows" => $totalRows[0] ) );
+    }
+
+    public static function getListByVendorId( $numRows=1000000 ) {
+      $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
+      $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM meals WHERE vendor_id = :vendor_id
+              ORDER BY id DESC LIMIT :numRows";
+
+      $st = $conn->prepare( $sql );
+      $st->bindValue( ":numRows", $numRows, PDO::PARAM_INT );
+      $st->bindValue( ":vendor_id", $vendor_id, PDO::PARAM_INT );
       $st->execute();
       $list = array();
 
@@ -267,9 +311,10 @@ class Meal
       // Insert the user
       $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
       $sql ="INSERT INTO meals
-             SET name=:name,price=:price,details=:details,image=:image";
+             SET vendor_id=:vendor_id,name=:name,price=:price,details=:details,image=:image";
 
       $st = $conn->prepare ( $sql );
+      $st->bindValue( ":vendor_id", $this->vendor_id, PDO::PARAM_INT );
       $st->bindValue( ":name", $this->name, PDO::PARAM_STR );
       $st->bindValue( ":price", $this->price, PDO::PARAM_STR );
       $st->bindValue( ":details", $this->details, PDO::PARAM_STR );
@@ -292,8 +337,9 @@ class Meal
     
       // Update the user
       $conn = new PDO( DB_DSN, DB_USERNAME, DB_PASSWORD );
-      $sql = "UPDATE meals SET name=:name, price=:price, details=:details, modified=:modified WHERE id = :id";
+      $sql = "UPDATE meals SET vendor_id=:vendor_id, name=:name, price=:price, details=:details, modified=:modified WHERE id = :id";
       $st = $conn->prepare ( $sql );
+      $st->bindValue( ":vendor_id", $this->vendor_id, PDO::PARAM_INT );
       $st->bindValue( ":name", $this->name, PDO::PARAM_STR );
       $st->bindValue( ":price", $this->price, PDO::PARAM_STR );
       $st->bindValue( ":details", $this->details, PDO::PARAM_STR );

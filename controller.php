@@ -285,6 +285,41 @@
     echo json_encode($response);
   }
 
+  function getAllFoodsByVendor(){
+    $code = ""; $message = "";
+    $response      = array();
+    $meals       = array();
+
+    $user          = new Meal;
+    $user->storeFormValues( $_POST );
+
+    $mealInfo    = $user->getListByVendorId();
+    $mealList    = $mealInfo['results'];
+    $numberOfItems = $mealInfo['totalRows'];
+  
+    if($numberOfItems >= 1){
+      foreach($mealList as $meal){
+
+        array_push($meals,
+        array("id"=> $meal->getid(),
+              "name"=>$meal->getname(),
+              "price"=>$meal->getprice(),
+              "details"=>$meal->getdetails(),
+              "image"=>$meal->getimage()));
+      }
+
+      $code = "GOOD";
+      $message = "meal Info Available";
+      array_push($response,array("code"=>$code,"message"=>$message,"foodList"=>$meals));
+    }else {
+      $code = "BAD";
+      $message = "No meal Available";
+      array_push($response,array("code"=>$code,"message"=>$message));
+    }
+   
+    echo json_encode($response);
+  }
+
   function getMealById() {
     $response = array();
     $meal = Meal::getById( $_POST['id']);

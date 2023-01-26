@@ -43,6 +43,9 @@ switch($action){
   case 'get-food-info':
     getAllFoods();
     break;
+  case 'get-food-info-byvendor':
+    getAllFoodsByVendor();
+    break;  
   case 'get-food-byId':
     getMealById();
     break;

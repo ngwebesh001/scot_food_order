@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 13, 2023 at 03:23 PM
+-- Generation Time: Jan 26, 2023 at 03:53 AM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 7.4.16
 
@@ -76,9 +76,11 @@ INSERT INTO `customers` (`id`, `first_name`, `last_name`, `email`, `password`, `
 
 CREATE TABLE `meals` (
   `id` int(11) NOT NULL,
+  `vendor_id` int(11) NOT NULL,
   `name` varchar(200) NOT NULL,
   `price` varchar(20) NOT NULL,
   `details` varchar(200) NOT NULL,
+  `image` text NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `modified` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -87,9 +89,8 @@ CREATE TABLE `meals` (
 -- Dumping data for table `meals`
 --
 
-INSERT INTO `meals` (`id`, `name`, `price`, `details`, `created`, `modified`) VALUES
-(1, 'beef stew', 'R30', 'rice and beef', '2023-01-13 13:07:12', '0000-00-00 00:00:00'),
-(2, 'chicken stew', 'R25', 'chicken and rice', '2023-01-13 13:07:40', '0000-00-00 00:00:00');
+INSERT INTO `meals` (`id`, `vendor_id`, `name`, `price`, `details`, `image`, `created`, `modified`) VALUES
+(4, 2, 'burger', '25', 'cheese and beef burger', 'meal-1673892925.png', '2023-01-16 18:15:25', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -112,7 +113,7 @@ CREATE TABLE `vendors` (
 --
 
 INSERT INTO `vendors` (`id`, `first_name`, `last_name`, `email`, `password`, `created`, `modified`) VALUES
-(1, 'Joe', 'Sanders', 'joe@gmail.com', '3627909a29c31381a071ec27f7c9ca97726182aed29a7ddd2e54353322cfb30abb9e3a6df2ac2c20fe23436311d678564d0c8d305930575f60e2d3d048184d79', '2023-01-10 01:38:44', '0000-00-00 00:00:00');
+(2, 'joe', 'zwane', 'joe@gmail.com', '3627909a29c31381a071ec27f7c9ca97726182aed29a7ddd2e54353322cfb30abb9e3a6df2ac2c20fe23436311d678564d0c8d305930575f60e2d3d048184d79', '2023-01-18 05:03:37', '0000-00-00 00:00:00');
 
 --
 -- Indexes for dumped tables
@@ -162,13 +163,13 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `meals`
 --
 ALTER TABLE `meals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `vendors`
 --
 ALTER TABLE `vendors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
